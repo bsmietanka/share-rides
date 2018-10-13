@@ -1,10 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import datetime
+import os
  
 from makebase import Offer, Base
- 
-engine = create_engine('sqlite:///sqlalchemy_example.db')
+
+database_url = os.environ.get('DATABASE_URL')
+engine = create_engine(database_url)
 Base.metadata.bind = engine
  
 DBSession = sessionmaker(bind=engine)

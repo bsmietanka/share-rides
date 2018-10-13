@@ -16,7 +16,8 @@ class Offer(Base):
  
 # Create an engine that stores data in the local directory's
 # sqlalchemy_example.db file.
-engine = create_engine('sqlite:///sqlalchemy_example.db')
+database_url = os.environ.get('DATABASE_URL')
+engine = create_engine(database_url)
  
 # Create all tables in the engine. This is equivalent to "Create Table"
 # statements in raw SQL.
