@@ -1,6 +1,7 @@
 import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, DECIMAL, Time
+from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -30,4 +31,6 @@ engine = create_engine(database_url)
 
 # Create all tables in the engine. This is equivalent to "Create Table"
 # statements in raw SQL.
+# MetaData.drop_all(engine)
+# Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

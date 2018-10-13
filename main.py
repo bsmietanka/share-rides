@@ -1,10 +1,18 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from flask.ext.api import status
 import os
 from datetime import time
 import json
 from makebase import Base, Offer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+import logging
+import socket
+from logging.handlers import SysLogHandler
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -14,8 +22,8 @@ def hello():
 
 @app.route("/offer", methods=['POST'])
 def offer():
-    content = request.json
-    parsed = json.loads(content)
+    parsed = request.json
+    # parsed = json.loads(content)
 
     start_coord = parsed["start_location"]
     end_coord = parsed["end_location"]
@@ -29,6 +37,8 @@ def offer():
     parsed["time_end"] =   time(*list(map(int, parsed["time_end"  ].split(":"))))
     parsed["time_start"] = time(*list(map(int, parsed["time_start"].split(":"))))
 
+    parsed["phone_number"] = str(parsed["phone_number"])
+
     new_offer = Offer(**parsed)
 
     database_url = os.environ.get('DATABASE_URL')
@@ -41,9 +51,10 @@ def offer():
     try:
         session.add(new_offer)
         session.commit()
-    except:
-        return json.dumps({ "offer_create_endpoint_respond_sucess" : { "success" : False }})
-    return json.dumps({ "offer_create_endpoint_respond_sucess" : { "success" : True }})
+    except Exception as e:
+        logger.exception("I got you")
+        return json.dumps({ "success" : False, "error_message" : str(e) }), status.HTTP_400_BAD_REQUEST
+    return json.dumps({ "success" : True }), status.HTTP_200_OKs
 
 if __name__ == "__main__":
     app.run()
