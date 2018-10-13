@@ -1,0 +1,16 @@
+{
+    "start_location": {
+        "lat": 54.23,
+        "long": 27.35
+    },
+    "end_location": {
+        "lat": 55.23,
+        "long": 35.35
+    },
+    "phone_number": 123456789,
+    "time_start": "8:30",
+    "time_end": "9:30",
+    "name": "Jacek",
+    "seats_available": 4,
+    "price": 20
+}
