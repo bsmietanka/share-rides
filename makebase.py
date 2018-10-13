@@ -4,9 +4,14 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, DECIMAL, T
 from sqlalchemy.schema import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
+from sqlalchemy.ext.hybrid import hybrid_method
+import logging
+from decimal import Decimal
  
 Base = declarative_base()
+
+logger = logging.getLogger(__name__)
  
 class Offer(Base):
     __tablename__ = 'offers'
@@ -23,6 +28,31 @@ class Offer(Base):
     end_long = Column(DECIMAL(), nullable=False)
     price = Column(DECIMAL(), nullable=True)
     seats_available = Column(Integer, nullable=False)
+
+    @hybrid_method
+    def start_distance(self, lat, lng):
+        lat_scale_factor = 0.009032
+        long_scale_factor = 0.0146867
+        return (func.pow(((self.start_lat - lat)/lat_scale_factor), 2) + 
+               func.pow(((self.start_long - lng)/long_scale_factor), 2))
+
+    @hybrid_method
+    def end_distance(self, lat, lng):
+        lat_scale_factor = 0.009032
+        long_scale_factor = 0.0146867
+        return (func.pow(((self.end_lat - lat)/lat_scale_factor), 2) + 
+               func.pow(((self.end_long - lng)/long_scale_factor), 2))
+
+    def as_dict(self):
+        ret = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        ret["time_start"] = ret["time_start"].strftime('%H:%M')
+        ret["time_end"] = ret["time_end"].strftime('%H:%M')
+        for key, item in ret.items():
+            if type(item) == Decimal:
+                ret[key] = float(item)
+        return ret
+
+
  
 # Create an engine that stores data in the local directory's
 # sqlalchemy_example.db file.
