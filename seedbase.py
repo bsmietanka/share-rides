@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from datetime import datetime
-import time
+from datetime import datetime, time
 #import datetime as dtime
 import json
 import pprint
@@ -29,8 +28,9 @@ end_coord = parsed["end_location"]
 parsed.pop("start_location", None)
 parsed.pop("end_location", None)
 
-parsed["time_end"] =  time.strptime(parsed["time_end"],"%H:%M")
-parsed["time_start"] = time.strptime(parsed["time_start"],"%H:%M")
+parsed["time_end"] =   time(*list(map(int, parsed["time_end"  ].split(":"))))
+parsed["time_start"] = time(*list(map(int, parsed["time_start"].split(":"))))
+print(parsed["time_end"])
 parsed["start_lat"] = start_coord["lat"]
 parsed["start_long"] = start_coord["long"]
 parsed["end_lat"] = end_coord["lat"]
