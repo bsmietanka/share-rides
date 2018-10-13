@@ -1,0 +1,62 @@
+{
+    "offer_create_endpoint_receive": {
+        "start_location": {
+            "lat": 54.23,
+            "long": 27.35
+        },
+        "end_location": {
+            "lat": 55.23,
+            "long": 35.35
+        },
+        "phone_number": 123456789,
+        "time_start": "8:30",
+        "time_end": "9:30",
+        "name": "Jacek",
+        "seats_available": 4,
+        "price": 20
+    },
+    "offer_create_endpoint_respond_sucess": {
+        "success": true
+    },
+    "offer_create_endpoint_respond_error": {
+        "success": false,
+        "message": "Error occured"
+    },
+    "offer_search_endpoint_receive": {
+        "start_location": {
+            "lat": 54.23,
+            "long": 27.35
+        },
+        "end_location": {
+            "lat": 55.23,
+            "long": 35.35
+        },
+        "time_start": "8:30",
+        "time_end": "9:30",
+        "name": "Jacek"
+    },
+    "offer_search_endpoint_respond_success": {
+        "success": true,
+        "offers": [{
+            "id": "123",
+            "start_location": {
+                "lat": 54.23,
+                "long": 27.35
+            },
+            "end_location": {
+                "lat": 55.23,
+                "long": 35.35
+            },
+            "phone_number": 123456789,
+            "time_start": "8:30",
+            "time_end": "9:30",
+            "name": "Jacek",
+            "seats_available": 4,
+            "price": 20
+        }]
+    },
+    "offer_search_endpoint_respond_error": {
+        "success": false,
+        "message": "Error occured"
+    }
+}
