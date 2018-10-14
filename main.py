@@ -71,7 +71,7 @@ def search():
         # res["time_end"] = res["time_end"].strftime('%H:%M')
         logger.info(json.dumps(res.as_dict()))
     # return json.dumps({ "success" : True, "offers" : json.dumps(results) }), 200
-    return json.dumps({ "success" : True, "offers" : json.dumps([r.as_dict() for r in results]) }), 200
+    return json.dumps({ "success" : True, "offers" : [r.as_dict() for r in results] }), 200
 
 @app.route("/drop_database", methods=["GET"])
 def drop_database():
@@ -95,7 +95,7 @@ def show_all():
     DBSession.bind = engine
     session = DBSession()
     res = session.query(Offer).all()
-    return json.dumps({ "offers" : json.dumps([r.as_dict() for r in res]) }), 200
+    return json.dumps({ "offers" : [r.as_dict() for r in res] }), 200
 
 
 if __name__ == "__main__":
