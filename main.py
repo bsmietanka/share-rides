@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+database_url = os.environ.get('DATABASE_URL')
+engine = create_engine(database_url)
 
 @app.route("/")
 def hello():
@@ -22,13 +24,11 @@ def hello():
 def offer():
     parsed = request.json
 
-    parsed["time_end"] =   time(*list(map(int, parsed["time_end"  ].split(":"))))
+    parsed["time_end"] =   time(*list(map(int, parsed["time_end"].split(":"))))
     parsed["time_start"] = time(*list(map(int, parsed["time_start"].split(":"))))
 
     new_offer = Offer(**parsed)
 
-    database_url = os.environ.get('DATABASE_URL')
-    engine = create_engine(database_url)
     Base.metadata.bind = engine
     DBSession = sessionmaker()
     DBSession.bind = engine
@@ -37,7 +37,9 @@ def offer():
     try:
         session.add(new_offer)
         session.commit()
+        session.close()
     except Exception as e:
+        session.close()
         logger.exception("I got you")
         return json.dumps({ "success" : False, "error_message" : str(e) }), 400
     return json.dumps({ "success" : True }), 200
@@ -46,8 +48,6 @@ def offer():
 def search():
     parsed = request.json
 
-    database_url = os.environ.get('DATABASE_URL')
-    engine = create_engine(database_url)
     Base.metadata.bind = engine
     DBSession = sessionmaker()
     DBSession.bind = engine
@@ -64,33 +64,32 @@ def search():
             Offer.time_end <= time(*list(map(int, parsed["time_end"].split(":")))),
             Offer.time_start >= time(*list(map(int, parsed["time_start"].split(":"))))
             )).order_by(Offer.time_end, Offer.time_start).all()
+        session.close()
     except Exception as e:
+        session.close()
         logger.exception("[ERROR] [Search]")
         return json.dumps({ "success" : False, "error_message" : str(e) }), 400
     return json.dumps({ "success" : True, "offers" : [r.as_dict() for r in results] }), 200
 
 @app.route("/drop_database", methods=["GET"])
 def drop_database():
-
-    database_url = os.environ.get('DATABASE_URL')
-    engine = create_engine(database_url)
     Base.metadata.bind = engine
     DBSession = sessionmaker()
     DBSession.bind = engine
     session = DBSession()
     rows_deleted = session.query(Offer).delete()
     session.commit()
+    session.close()
     return "DATABASE DROPPED, ROWS DELETED: " + str(rows_deleted)
 
 @app.route("/show_all", methods=["GET"])
 def show_all():
-    database_url = os.environ.get('DATABASE_URL')
-    engine = create_engine(database_url)
     Base.metadata.bind = engine
     DBSession = sessionmaker()
     DBSession.bind = engine
     session = DBSession()
     res = session.query(Offer).all()
+    session.close()
     return json.dumps({ "offers" : [r.as_dict() for r in res] }), 200
 
 
