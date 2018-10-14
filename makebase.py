@@ -59,8 +59,4 @@ class Offer(Base):
 database_url = os.environ.get('DATABASE_URL')
 engine = create_engine(database_url)
 
-# Create all tables in the engine. This is equivalent to "Create Table"
-# statements in raw SQL.
-# MetaData.drop_all(engine)
-# Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)

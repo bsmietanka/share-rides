@@ -7,10 +7,12 @@ from datetime import time
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 import logging
+from flask_cors import CORS
 
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def hello():
@@ -65,12 +67,6 @@ def search():
     except Exception as e:
         logger.exception("[ERROR] [Search]")
         return json.dumps({ "success" : False, "error_message" : str(e) }), 400
-    for res in results:
-        # logger.info(json.dumps(res))
-        # res["time_start"] = res["time_start"].strftime('%H:%M')
-        # res["time_end"] = res["time_end"].strftime('%H:%M')
-        logger.info(json.dumps(res.as_dict()))
-    # return json.dumps({ "success" : True, "offers" : json.dumps(results) }), 200
     return json.dumps({ "success" : True, "offers" : [r.as_dict() for r in results] }), 200
 
 @app.route("/drop_database", methods=["GET"])
