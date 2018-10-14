@@ -73,5 +73,30 @@ def search():
     # return json.dumps({ "success" : True, "offers" : json.dumps(results) }), 200
     return json.dumps({ "success" : True, "offers" : json.dumps([r.as_dict() for r in results]) }), 200
 
+@app.route("/drop_database", methods=["GET"])
+def drop_database():
+
+    database_url = os.environ.get('DATABASE_URL')
+    engine = create_engine(database_url)
+    Base.metadata.bind = engine
+    DBSession = sessionmaker()
+    DBSession.bind = engine
+    session = DBSession()
+    rows_deleted = session.query(Offer).delete()
+    session.commit()
+    return "DATABASE DROPPED, ROWS DELETED: " + str(rows_deleted)
+
+@app.route("/show_all", methods=["GET"])
+def show_all():
+    database_url = os.environ.get('DATABASE_URL')
+    engine = create_engine(database_url)
+    Base.metadata.bind = engine
+    DBSession = sessionmaker()
+    DBSession.bind = engine
+    session = DBSession()
+    res = session.query(Offer).all()
+    return json.dumps({ "offers" : json.dumps([r.as_dict() for r in res]) }), 200
+
+
 if __name__ == "__main__":
     app.run()
